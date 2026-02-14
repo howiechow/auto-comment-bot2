@@ -1,0 +1,25 @@
+name: Auto Comment and Close
+on:
+  issues:
+    types: [opened]
+jobs:
+  comment-and-close:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.issue.labels.*.name, 'feedback') ||
+      contains(github.event.issue.labels.*.name, 'suggestion')
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Comment on issue
+        run: |
+          gh issue comment ${{ github.event.issue.html_url }} --body "Thank you for your contribution!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close issue
+        run: |
+          gh issue close ${{ github.event.issue.html_url }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
